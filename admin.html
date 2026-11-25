@@ -1,0 +1,67 @@
+<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>پنل فروشنده | زانا کافی</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css?v=5">
+<style>.ad{display:grid;grid-template-columns:420px 1fr;gap:28px;align-items:start}.ad form{max-width:none}
+.prow{display:flex;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:10px}
+.prow img{width:64px;height:64px;object-fit:cover;border-radius:8px;background:#fff}.prow .g{flex:1;min-width:0}.prow b{display:block}
+.tag{font-size:12px;background:var(--line);padding:1px 10px;border-radius:999px;color:var(--mut);font-weight:400}
+.danger{background:#b3402a;color:#fff}.btn:disabled{opacity:.45;cursor:not-allowed}.snack{position:fixed;bottom:20px;inset-inline-start:20px;z-index:50;background:var(--teal);color:var(--bg);padding:12px 18px;border-radius:12px;display:flex;gap:14px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.3)}.snack button{background:var(--amber);border:0;border-radius:8px;padding:4px 14px;font:inherit;font-weight:700;cursor:pointer;color:#2a1b14}.prow .btn{padding:6px 14px}
+.note{background:var(--card);border:1px dashed var(--amber);border-radius:12px;padding:12px 16px;margin:14px 0 18px}
+.prev{width:120px;height:120px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}
+@media(max-width:860px){.ad{grid-template-columns:1fr}}</style></head>
+<body data-page="admin"><header><div class="wrap bar"><a class="logo" href="index.html">زانا<small>پنل فروشنده</small></a><nav><a href="shop.html">دیدن فروشگاه</a></nav><button class="btn ghost" id="lo" type="button" hidden>خروج</button></div></header>
+<main class="wrap">
+<section id="gate"><h1 style="font-size:36px">ورود فروشنده</h1><form id="lf" style="margin-top:18px"><label>رمز عبور<input type="password" id="pw" required autocomplete="current-password"></label><button class="btn alt">ورود</button><p class="msg" id="lm" role="alert"></p></form></section>
+<section id="panel" hidden>
+<h1 style="font-size:34px">مدیریت محصولات <span class="tag" id="cnt"></span></h1>
+<div class="note"><b>مهم:</b> تغییرات این صفحه فقط در همین مرورگر ذخیره می‌شود و مشتریان نمی‌بینند. برای انتشار، دکمه‌ی «دانلود فایل محصولات» را بزنید و فایل <code>catalog.js</code> دانلودشده را جای فایل هم‌نام در پوشه‌ی سایت (یا روی هاست) بگذارید.</div>
+<p><button class="btn alt" id="ex" type="button">دانلود فایل محصولات (catalog.js)</button> <button class="btn" id="un" type="button" disabled>↩ بازگردانی آخرین تغییر</button> <button class="btn ghost" id="rs" type="button">بازگردانی محصولات اولیه سایت</button></p>
+<div class="ad" style="margin-top:24px"><div><h2 id="ft">افزودن محصول</h2>
+<form id="pf"><label>نام محصول *<input id="fn" required maxlength="80"></label><label>قیمت (تومان) *<input id="fp" required inputmode="numeric"></label><label>وزن یا واحد<input id="fw" placeholder="مثلاً ۵۰۰ گرم"></label>
+<label>دسته<select id="fc"><option value="دانه">دانه‌ی قهوه</option><option value="آسیاب‌شده">قهوه‌ی آسیاب‌شده</option><option value="فوری">قهوه‌ی فوری</option><option value="دستگاه">دستگاه و لوازم</option><option value="سایر">سایر</option></select></label>
+<label>توضیح کوتاه<textarea id="fd" rows="2"></textarea></label>
+<label>مشخصات (هر خط یک مورد: «عنوان: مقدار»)<textarea id="sp" rows="5" placeholder="درجه‌ی رُست: متوسط&#10;طعم: شکلات تلخ"></textarea></label>
+<label>عکس محصول<input type="file" id="img" accept="image/*"></label><img id="prev" class="prev" alt="" hidden>
+<div><button class="btn alt" id="sv">افزودن محصول</button> <button class="btn ghost" id="cn" type="button" hidden>انصراف</button></div><p class="msg" id="fm" role="status"></p></form></div>
+<div><h2>محصولات</h2><div id="items"></div></div></div></section></main>
+<script src="catalog.js?v=5"></script><script src="main.js?v=5"></script>
+<script>
+const PASS='zana1234'; /* رمز ورود را اینجا عوض کنید */
+const $=i=>document.getElementById(i);
+const toEn=s=>String(s).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const LAB={'دانه':'دانه‌ی قهوه','آسیاب‌شده':'قهوه‌ی آسیاب‌شده','فوری':'قهوه‌ی فوری','دستگاه':'دستگاه و لوازم','سایر':'سایر'};
+const PH='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#e8d7c3"/><text x="100" y="125" font-size="80" text-anchor="middle">☕</text></svg>');
+let list=JSON.parse(JSON.stringify(P)),editing=null,imgData=null,hist=[];
+try{hist=JSON.parse(localStorage.getItem('zcath')||'[]')}catch(e){}
+const saveHist=()=>{let h=hist.slice();for(;;){try{localStorage.setItem('zcath',JSON.stringify(h));return}catch(e){if(!h.length)return;h.shift()}}};
+const snap=()=>{hist.push(JSON.stringify(list));hist=hist.slice(-5);saveHist();$('un').disabled=false};
+function undo(){if(!hist.length)return;list=JSON.parse(hist.pop());saveHist();resetForm();save();render();$('un').disabled=!hist.length}
+function toast(t,fn){document.querySelectorAll('.snack').forEach(x=>x.remove());const d=document.createElement('div');d.className='snack';d.setAttribute('role','status');d.innerHTML='<span></span>'+(fn?'<button type="button">بازگردانی</button>':'');d.firstChild.textContent=t;if(fn)d.querySelector('button').onclick=()=>{fn();d.remove()};document.body.append(d);setTimeout(()=>d.remove(),8000)}
+const save=()=>{try{localStorage.setItem('zcat',JSON.stringify(list));return true}catch(e){alert('حافظه‌ی مرورگر پر شد. عکس کوچک‌تری بگذارید یا چند محصول را حذف کنید.');return false}};
+const msg=t=>{$('fm').textContent=t;setTimeout(()=>$('fm').textContent='',2500)};
+function render(){$('cnt').textContent=fa(list.length)+' محصول';
+$('items').innerHTML=list.map(p=>`<div class="prow"><img src="${esc(p.i)}" alt=""><div class="g"><b>${esc(p.n)}</b><span class="mut">${fa(p.p)} تومان · ${esc(p.w||'')}</span> <span class="tag">${LAB[catOf(p)]||esc(catOf(p))}</span></div><button class="btn ghost" type="button" data-e="${p.id}">ویرایش</button><button class="btn danger" type="button" data-d="${p.id}">حذف</button></div>`).join('')||'<div class="note"><b>فهرست خالی است.</b><br>محصولات اولیه را برگردانید یا محصول تازه اضافه کنید.<br><br><button class="btn" type="button" id="re2">بازگردانی محصولات اولیه</button></div>';bindRe()}
+function bindRe(){const b=$('re2');if(b)b.onclick=restore}
+function resetForm(){editing=null;imgData=null;$('pf').reset();$('prev').hidden=true;$('sv').textContent='افزودن محصول';$('ft').textContent='افزودن محصول';$('cn').hidden=true}
+$('items').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+if(b.dataset.d){const p=list.find(x=>x.id==b.dataset.d);if(p&&confirm('«'+p.n+'» حذف شود؟')){snap();list=list.filter(x=>x!==p);if(editing===p)resetForm();save();render();bindRe();toast('«'+p.n+'» حذف شد.',undo)}}
+if(b.dataset.e){const p=list.find(x=>x.id==b.dataset.e);if(!p)return;editing=p;imgData=null;$('fn').value=p.n;$('fp').value=p.p;$('fw').value=p.w||'';$('fc').value=catOf(p);$('fd').value=p.d||'';
+$('sp').value=(p.s||[]).filter(r=>r[0]!='نوع محصول').map(r=>r[0]+': '+r[1]).join('\n');$('prev').src=p.i;$('prev').hidden=false;$('sv').textContent='ذخیره‌ی تغییرات';$('ft').textContent='ویرایش محصول';$('cn').hidden=false;$('pf').scrollIntoView({behavior:'smooth'})}};
+$('cn').onclick=resetForm;
+$('img').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,800/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);imgData=c.toDataURL('image/jpeg',.82);$('prev').src=imgData;$('prev').hidden=false};im.src=r.result};r.readAsDataURL(f)};
+$('pf').onsubmit=e=>{e.preventDefault();const n=$('fn').value.trim(),pr=Number(toEn($('fp').value).replace(/[^\d]/g,''));
+if(!n||!pr){msg('نام و قیمت را درست وارد کنید.');return}
+const cat=$('fc').value;
+const s=$('sp').value.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const i=l.search(/[:：]/);return i>0?[l.slice(0,i).trim(),l.slice(i+1).trim()]:null}).filter(r=>r&&r[0]!='نوع محصول');
+s.unshift(['نوع محصول',LAB[cat]]);
+const o={n,p:pr,w:$('fw').value.trim(),d:$('fd').value.trim(),cat,s};if(imgData)o.i=imgData;
+snap();if(editing){Object.assign(editing,o);msg('تغییرات ذخیره شد.')}else{o.id=Math.max(100,...list.map(x=>x.id))+1;o.i=o.i||PH;list.push(o);msg('محصول اضافه شد.')}
+if(save()){render();bindRe();const m=$('fm').textContent;resetForm();$('fm').textContent=m}};
+$('ex').onclick=()=>{const t='/* فایل محصولات زانا؛ این فایل را جایگزین catalog.js در پوشه‌ی سایت کنید */\nwindow.CATALOG='+JSON.stringify(list)+';\n';const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/javascript'}));a.download='catalog.js';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+const restore=()=>{if(!confirm('لیست به محصولات اولیه‌ی سایت برگردد؟ (می‌توانید با «بازگردانی آخرین تغییر» لغوش کنید.)'))return;snap();try{localStorage.removeItem('zcat')}catch(e){}location.reload()};
+$('rs').onclick=restore;$('un').onclick=undo;
+const open=()=>{$('gate').hidden=true;$('panel').hidden=false;$('lo').hidden=false;render();bindRe();$('un').disabled=!hist.length};
+$('lf').onsubmit=e=>{e.preventDefault();if($('pw').value===PASS){try{sessionStorage.zadm='1'}catch(x){}open()}else{$('lm').textContent='رمز عبور اشتباه است.'}};
+$('lo').onclick=()=>{try{sessionStorage.removeItem('zadm')}catch(e){}location.reload()};
+try{if(sessionStorage.zadm==='1')open()}catch(e){}
+</script></body></html>
